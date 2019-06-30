@@ -7,23 +7,32 @@ Transition::Transition(TimeFormat duration, std::shared_ptr<Timeline> src, std::
 void Transition::runAt(TimeFormat time){
     src->tick(false, false);
     tgt->tick(false, false);
+    const TimeFormat x = time/duration;
+    
 
-    runAndComposit(min(1.0f, max(0.0f, time/duration)));
+    runAndComposit(min(1.0f, max(0.0f, 3*x*x - 2*x*x*x)));//smooth-step
+    //runAndComposit(min(1.0f, max(0.0f, x)));
 }
 
-void AlphaTransition::runAndComposit(TimeFormat alpha){
+void BlendTransition::runAndComposit(TimeFormat alpha){
     const uint8_t smask = src->runWithTransition();
-    src->compositWithTransition(smask, LEDState::LayerTypes::SolidBackground, LEDState::LayerTypes::TransitionBackBuffer);
+    src->compositWithTransition(
+        smask, 
+        LEDState::LayerTypes::SolidBackground, 
+        LEDState::LayerTypes::TransitionBackBuffer);
 
     const uint8_t tmask = tgt->runWithTransition();
-    tgt->compositWithTransition(tmask, LEDState::LayerTypes::SolidBackground, LEDState::LayerTypes::FinalComposit);
+    tgt->compositWithTransition(
+        tmask, 
+        LEDState::LayerTypes::SolidBackground, 
+        LEDState::LayerTypes::FinalComposit);
 
     for (int c=0; c<view->width; c++){
         for (int r=0; r<view->height; r++){            
-            CRGB cl = view->pixelFromLayer(c, r, LEDState::LayerTypes::TransitionBackBuffer);
-            const CRGB c = view->pixelFromLayer(c, r, LEDState::LayerTypes::FinalComposit);
+            const CRGB c0 = view->pixelFromLayer(c, r, LEDState::LayerTypes::TransitionBackBuffer);
+            const CRGB c1 = view->pixelFromLayer(c, r, LEDState::LayerTypes::FinalComposit);
             
-            view->pixelFromLayer(c, r, LEDState::LayerTypes::FinalComposit) = alphaBlend(cl, c, alpha);
+            view->pixelFromLayer(c, r, LEDState::LayerTypes::FinalComposit) = alphaBlendWithGamma(c0, c1, alpha);
         }
     }
 }

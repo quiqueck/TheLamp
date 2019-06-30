@@ -5,6 +5,7 @@
 #include "VirtualGrid.h"
 #include "Timeline.h"
 #include "Animation.h"
+#include "Transition.h"
 
 uint8_t RANDOM = 0;
 #define  TOUCH_PIN 4 
@@ -25,7 +26,8 @@ void mainButtonPressed(SmartHomeRelay* r){
 
 Relay* rly = nullptr;
 
-std::shared_ptr<Timeline> t1;
+std::shared_ptr<Timeline> t1, t2;
+std::shared_ptr<BlendTransition> trans;
 
 void setupTestTimeline() {
     t1 = std::make_shared<Timeline>();
@@ -134,6 +136,7 @@ void setup(){
     delay(500);
 
     t1 = std::make_shared<Timeline>();
+    t2 = std::make_shared<Timeline>();
 
     auto aBG0 = std::make_shared<SolidColorAnimation>(panels[0], CRGB::Red);
     auto aBG1 = std::make_shared<SolidColorAnimation>(panels[1], CRGB::Green);
@@ -141,7 +144,9 @@ void setup(){
     auto aBG3 = std::make_shared<SolidColorAnimation>(panels[3], CRGB::Magenta);
     auto aBG4 = std::make_shared<SolidColorAnimation>(panels[4], CRGB::Cyan);
     auto aBG5 = std::make_shared<SolidColorAnimation>(panels[5], CRGB::Yellow);
-    auto a1 = std::make_shared<HorizontalWipeAnimation>(master, CRGB::Orange, 2.0f, 5.0f, timeBounce<Animation>);
+    auto aBG6 = std::make_shared<SolidColorAnimation>(master, CRGB::Magenta);
+    auto a1 = std::make_shared<HorizontalWipeAnimation>(master, CRGB::Red, 2.0f, 5.0f, timeBounce<Animation>);
+    auto a2 = std::make_shared<VerticalWipeAnimation>(master, CRGB::Yellow, 2.0f, 4.0f, timeBounce<Animation>);
 
     auto c1 = std::make_shared<DefaultCompositor>(master);
 
@@ -153,13 +158,57 @@ void setup(){
     t1->addTrack(aBG4, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
     t1->addTrack(aBG5, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
 
+    t2->addTrack(a2, 0.0f, 0, LEDState::LayerTypes::BottomOverlay);
+    // t2->addTrack(aBG0, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    // t2->addTrack(aBG1, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    // t2->addTrack(aBG2, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    // t2->addTrack(aBG3, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    // t2->addTrack(aBG4, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    // t2->addTrack(aBG5, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    t2->addTrack(aBG6, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+
     t1->addCompositor(c1, 0.0f);
+    t2->addCompositor(c1, 0.0f);
+
     t1->begin();
+
+    trans = std::make_shared<BlendTransition>(master, 3.0f, t1, t2);    
 }
 Timeline t;
-void loop(){
-  if (t1->tick()) {
-    leds.show();
+void loop(){    
+  if (trans->finished()) {
+    if (t2->tick()) {
+      leds.show();
+    }
+  } else if (t1->localTime() > 5.0f) {
+    if (trans->paused()) trans->begin();
+    if (trans->tick()) {      
+      leds.show();
+    }
+  } else 
+  {
+    if (t1->tick()) {
+      leds.show();
+    }
+  }
+
+  static bool down = false;
+  const uint8_t samples = 16;
+  int touchVal = 0;
+  for(int i=0; i< samples; i++){
+    touchVal += touchRead(T0);    
+  }
+  touchVal /= samples;
+  //Serial.printf("touch: %d @ %d\n", touchVal, T0);
+  if (touchVal < 30 ) {
+    if (!down){
+      down = true;
+      t2->pause();
+      trans = std::make_shared<BlendTransition>(master, 3.0f, t1, t2);  
+      t1->begin();      
+    }
+  }  else {
+    down = false;
   }
 }
 

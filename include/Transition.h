@@ -15,9 +15,9 @@ class Transition : public Tickable{
         const std::shared_ptr<Timeline> tgt;
 };
 
-class AlphaTransition : public Transition{
+class BlendTransition : public Transition{
     public:
-        AlphaTransition(class LEDView2* view, TimeFormat duration, std::shared_ptr<Timeline> src, std::shared_ptr<Timeline> tgt) 
+        BlendTransition(class LEDView2* view, TimeFormat duration, std::shared_ptr<Timeline> src, std::shared_ptr<Timeline> tgt) 
             : Transition(duration, src, tgt), view(view) {}
         
     protected:
