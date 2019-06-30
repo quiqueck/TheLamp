@@ -10,8 +10,8 @@
 
 class TimeItem {
     public:
-        virtual double startTime() const = 0;
-        virtual double endTime() const = 0;
+        virtual TimeFormat startTime() const = 0;
+        virtual TimeFormat endTime() const = 0;
 };
 
 template<class ItemType> 
@@ -20,18 +20,18 @@ class TimedList {
         typedef std::shared_ptr<ItemType> PItemType;
         struct TimeItem {
             PItemType value;
-            double startTime;
-            double endTime;
+            TimeFormat startTime;
+            TimeFormat endTime;
             LEDState::LayerTypes layer;
         };
-        typedef std::function<void (const double, const TimeItem&)> RunFunction;
+        typedef std::function<void (const TimeFormat, const TimeItem&)> RunFunction;
 
     public:
-        void addItem(PItemType item, double startTime, double duration, LEDState::LayerTypes layer);
-        void each(double time, RunFunction fkt);
-        void runAt(double time, RunFunction fkt);
-        void runAfter(double time, RunFunction fkt);
-        void runBefore(double time, RunFunction fkt);
+        void addItem(PItemType item, TimeFormat startTime, TimeFormat duration, LEDState::LayerTypes layer);
+        void each(TimeFormat time, RunFunction fkt);
+        void runAt(TimeFormat time, RunFunction fkt);
+        void runAfter(TimeFormat time, RunFunction fkt);
+        void runBefore(TimeFormat time, RunFunction fkt);
         void reset();
     protected:
 

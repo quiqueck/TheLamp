@@ -15,7 +15,7 @@ class Tickable {
         Tickable();
                 
         void tick(bool earlyOut=true, bool callRun=true);
-        virtual void runAt(double time) = 0;
+        virtual void runAt(TimeFormat time) = 0;
 
         inline void begin() {
             reset();
@@ -34,7 +34,7 @@ class Tickable {
 
         unsigned long lastTick;
         unsigned long accDelta;
-        double time; 
+        TimeFormat time; 
         bool active;       
 };
 
@@ -42,24 +42,24 @@ class Timeline : public Tickable{
     public:
         Timeline();
 
-        inline void addTrack(AnimationList::PItemType track, double startTime, LEDState::LayerTypes layer){
+        inline void addTrack(AnimationList::PItemType track, TimeFormat startTime, LEDState::LayerTypes layer){
             addTrack(track, startTime, track->duration, layer);
         }
 
-        inline void addCompositor(CompositList::PItemType track, double startTime, LEDState::LayerTypes layer){
+        inline void addCompositor(CompositList::PItemType track, TimeFormat startTime, LEDState::LayerTypes layer){
             addCompositor(track, startTime, track->duration, layer);
         }
         /**
          * playbackDuration: <=0 results in endless palayback
          */
-        void addTrack(AnimationList::PItemType track, double startTime, double playbackDuration, LEDState::LayerTypes layer);
+        void addTrack(AnimationList::PItemType track, TimeFormat startTime, TimeFormat playbackDuration, LEDState::LayerTypes layer);
         
-        void addCompositor(CompositList::PItemType track, double startTime, double playbackDuration, LEDState::LayerTypes layer);
+        void addCompositor(CompositList::PItemType track, TimeFormat startTime, TimeFormat playbackDuration, LEDState::LayerTypes layer);
 
-        void addAction(ActionList::PItemType track, double timeStamp, LEDState::LayerTypes layer=LEDState::LayerTypes::FinalComposit);
+        void addAction(ActionList::PItemType track, TimeFormat timeStamp, LEDState::LayerTypes layer=LEDState::LayerTypes::FinalComposit);
         
-        void runAt(double time);        
-        void goToTime(double time);
+        void runAt(TimeFormat time);        
+        void goToTime(TimeFormat time);
         
         uint8_t runWithTransition();
         void compositWithTransition(uint8_t layerMask, LEDState::LayerTypes Background, LEDState::LayerTypes Final);

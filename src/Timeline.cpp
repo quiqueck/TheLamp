@@ -49,7 +49,7 @@ void Timeline::reset(){
 uint8_t Timeline::runWithTransition(){
     Serial.printf("Composit Time %f\n", time);
     uint8_t layerMask = 0;
-    tracks.runAt(time, [&layerMask](const double myTime, const AnimationList::TimeItem& item) { 
+    tracks.runAt(time, [&layerMask](const TimeFormat myTime, const AnimationList::TimeItem& item) { 
             addBit(layerMask, item.layer);
             item.value->render(myTime, item.layer);
     });
@@ -61,59 +61,59 @@ void Timeline::compositWithTransition(uint8_t layerMask, LEDState::LayerTypes Ba
     Serial.printf(" => mask=%d\n", layerMask);
     const LEDState::LayerTypes BG = Background;
     const LEDState::LayerTypes FG = Final;
-    compositors.runAt(time, [layerMask, BG, FG](const double myTime, const CompositList::TimeItem& item) { 
+    compositors.runAt(time, [layerMask, BG, FG](const TimeFormat myTime, const CompositList::TimeItem& item) { 
         item.value->composit(myTime, layerMask, BG, FG);
     });
 
-    actions.runAt(time, [layerMask](const double myTime, const ActionList::TimeItem& item) {             
+    actions.runAt(time, [layerMask](const TimeFormat myTime, const ActionList::TimeItem& item) {             
             item.value->execute(myTime, layerMask, item.layer);
     });
 }
 
-void Timeline::runAt(double time){
+void Timeline::runAt(TimeFormat time){
     Serial.printf("Time %f\n", time);
     uint8_t layerMask = 0;
-    tracks.runAt(time, [&layerMask](const double myTime, const AnimationList::TimeItem& item) { 
+    tracks.runAt(time, [&layerMask](const TimeFormat myTime, const AnimationList::TimeItem& item) { 
             addBit(layerMask, item.layer);
             item.value->render(myTime, item.layer);
     });
 
     Serial.printf(" => mask=%d\n", layerMask);
-    compositors.runAt(time, [layerMask](const double myTime, const CompositList::TimeItem& item) { 
+    compositors.runAt(time, [layerMask](const TimeFormat myTime, const CompositList::TimeItem& item) { 
             item.value->composit(myTime, layerMask, LEDState::LayerTypes::SolidBackground, item.layer);
     });
 
-    actions.runAt(time, [layerMask](const double myTime, const ActionList::TimeItem& item) {             
+    actions.runAt(time, [layerMask](const TimeFormat myTime, const ActionList::TimeItem& item) {             
             item.value->execute(myTime, layerMask, item.layer);
     });
 }
 
-void Timeline::goToTime(double t){
+void Timeline::goToTime(TimeFormat t){
     resetTime();
     time = t;
 
     //do soft resets
-    tracks.runAfter(time, [](const double myTime, const AnimationList::TimeItem& item) {
+    tracks.runAfter(time, [](const TimeFormat myTime, const AnimationList::TimeItem& item) {
             item.value->reset(true);
     });
 
-    compositors.runAfter(time, [](const double myTime, const CompositList::TimeItem& item) { 
+    compositors.runAfter(time, [](const TimeFormat myTime, const CompositList::TimeItem& item) { 
             item.value->reset(true);
     });
 
-    actions.runAfter(time, [](const double myTime, const ActionList::TimeItem& item) {             
+    actions.runAfter(time, [](const TimeFormat myTime, const ActionList::TimeItem& item) {             
             item.value->reset(true);
     });
 }
 
-void Timeline::addTrack(AnimationList::PItemType track, double startTime, double playbackDuration, LEDState::LayerTypes layer){
+void Timeline::addTrack(AnimationList::PItemType track, TimeFormat startTime, TimeFormat playbackDuration, LEDState::LayerTypes layer){
     tracks.addItem(track, startTime, playbackDuration, layer);
 }
 
-void Timeline::addCompositor(CompositList::PItemType track, double startTime, double playbackDuration, LEDState::LayerTypes layer){
+void Timeline::addCompositor(CompositList::PItemType track, TimeFormat startTime, TimeFormat playbackDuration, LEDState::LayerTypes layer){
     compositors.addItem(track, startTime, playbackDuration, layer);
 }
 
-void Timeline::addAction(ActionList::PItemType track, double timeStamp, LEDState::LayerTypes layer){
+void Timeline::addAction(ActionList::PItemType track, TimeFormat timeStamp, LEDState::LayerTypes layer){
     actions.addItem(track, timeStamp, 0, layer);
 }

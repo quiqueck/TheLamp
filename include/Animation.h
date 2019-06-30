@@ -31,42 +31,42 @@
 
  */
 
-typedef double TimeFormat;
-typedef std::function<double (const double, const class Animation*)> AnimationRetimeFunction;
+typedef float TimeFormat;
+typedef std::function<TimeFormat (const TimeFormat, const class Animation*)> AnimationRetimeFunction;
 
 template <class T>
-inline double timeIdentity(const double inTime, const T* a){
+inline TimeFormat timeIdentity(const TimeFormat inTime, const T* a){
     return inTime;
 }
 
 class Animation {
     public:        
-        Animation(double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>);
+        Animation(TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>);
 
         /*
         soft = false  => timeline needs to be restarted
         soft = true   => timeline moved to a previous timestamp => do not reset state of the object but make sure it can be enabled again
          */
         inline void reset(bool soft=false) const {}
-        inline void render(double time, LEDState::LayerTypes layer = LEDState::LayerTypes::FinalComposit) {
+        inline void render(TimeFormat time, LEDState::LayerTypes layer = LEDState::LayerTypes::FinalComposit) {
             renderIntern(timeFunction(time, this), layer);
         }
 
-        const double duration;
+        const TimeFormat duration;
         const AnimationRetimeFunction timeFunction;
     protected:
-        virtual void renderIntern(double time, LEDState::LayerTypes layer) = 0;
+        virtual void renderIntern(TimeFormat time, LEDState::LayerTypes layer) = 0;
     private:
         
 };
 
 class TestAnimation : public Animation {
     public:        
-        TestAnimation(std::string n, double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation(duration, tmFkt), name(n) {
+        TestAnimation(std::string n, TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation(duration, tmFkt), name(n) {
 
         }
     protected:
-        virtual void renderIntern(double time, LEDState::LayerTypes layer){
+        virtual void renderIntern(TimeFormat time, LEDState::LayerTypes layer){
             Serial.printf("    - Render to layer %s: %d @ %f\n", name.c_str(), layer, time);
         }
 
@@ -76,39 +76,39 @@ class TestAnimation : public Animation {
 
 class Animation2D : public Animation {
     public:        
-        Animation2D(class LEDView2* view, double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation(duration, tmFkt), view(view){}
+        Animation2D(class LEDView2* view, TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation(duration, tmFkt), view(view){}
     protected:
         class LEDView2 * const view;
 };
 
 class SolidColorAnimation : public Animation2D {
     public:        
-        SolidColorAnimation(class LEDView2* view, CRGB cl, double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl) {}
+        SolidColorAnimation(class LEDView2* view, CRGB cl, TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl) {}
     protected:
-        virtual void renderIntern(double time, LEDState::LayerTypes layer);
+        virtual void renderIntern(TimeFormat time, LEDState::LayerTypes layer);
     private:
         const CRGB cl;
 };
 
 class HorizontalFillAnimation : public Animation2D {
     public:        
-        HorizontalFillAnimation(class LEDView2* view, CRGB cl, double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl) {}
+        HorizontalFillAnimation(class LEDView2* view, CRGB cl, TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl) {}
     protected:
-        virtual void renderIntern(double time, LEDState::LayerTypes layer);
+        virtual void renderIntern(TimeFormat time, LEDState::LayerTypes layer);
     private:
         const CRGB cl;
 };
 
 template <class T>
-inline double timeRepeat(const double inTime, const T* a){
-    double t = inTime;
+inline TimeFormat timeRepeat(const TimeFormat inTime, const T* a){
+    TimeFormat t = inTime;
     while (t>=a->duration) t -= a->duration;
     return t;
 }
 
 template <class T>
-inline double timeBounce(const double inTime, const T* a){
-    double t = inTime;
+inline TimeFormat timeBounce(const TimeFormat inTime, const T* a){
+    TimeFormat t = inTime;
     while (t>=2*a->duration) t -= 2*a->duration;
     if (t>=a->duration) {
         t = (2*a->duration-1) - t;

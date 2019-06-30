@@ -84,13 +84,13 @@ void setup(){
 
     //auto e1 = std::make_shared<TestAction>("PAUSE");
     auto timeline = t1;
-    auto e1 = std::make_shared<DefaultAction>([timeline](const double time, const Action* a){
+    auto e1 = std::make_shared<DefaultAction>([timeline](const TimeFormat time, const Action* a){
       Serial.println("---- PAUSE ----");
       timeline->pause();
     });
 
     //auto e2 = std::make_shared<TestAction>("GOTO");
-     auto e2 = std::make_shared<RepeatableAction>([timeline](const double time, const Action* a){
+     auto e2 = std::make_shared<RepeatableAction>([timeline](const TimeFormat time, const Action* a){
       Serial.printf("---- GO BACK ----\n");      
       timeline->goToTime(1.00);
     }, 3);

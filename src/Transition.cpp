@@ -1,17 +1,17 @@
 #include "Transition.h"
 
-Transition::Transition(double duration, std::shared_ptr<Timeline> src, std::shared_ptr<Timeline> tgt) : Tickable(), duration(duration), src(src), tgt(tgt) {
+Transition::Transition(TimeFormat duration, std::shared_ptr<Timeline> src, std::shared_ptr<Timeline> tgt) : Tickable(), duration(duration), src(src), tgt(tgt) {
 
 }
 
-void Transition::runAt(double time){
+void Transition::runAt(TimeFormat time){
     src->tick(false, false);
     tgt->tick(false, false);
 
-    runAndComposit(min(1.0, max(0.0, time/duration)));
+    runAndComposit(min(1.0f, max(0.0f, time/duration)));
 }
 
-void AlphaTransition::runAndComposit(double alpha){
+void AlphaTransition::runAndComposit(TimeFormat alpha){
     const uint8_t smask = src->runWithTransition();
     src->compositWithTransition(smask, LEDState::LayerTypes::SolidBackground, LEDState::LayerTypes::TransitionBackBuffer);
 

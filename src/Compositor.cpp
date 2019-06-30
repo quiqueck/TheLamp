@@ -1,11 +1,11 @@
 #include "Animation.h"
 #include "Compositor.h"
 
-Compositor::Compositor(double duration, CompositRetimeFunction tmFkt) : duration(duration), timeFunction(tmFkt) {
+Compositor::Compositor(TimeFormat duration, CompositRetimeFunction tmFkt) : duration(duration), timeFunction(tmFkt) {
      
 }
 
-void DefaultCompositor::compositIntern(double time, uint8_t layerMask, LEDState::LayerTypes backlayer, LEDState::LayerTypes frontlayer){
+void DefaultCompositor::compositIntern(TimeFormat time, uint8_t layerMask, LEDState::LayerTypes backlayer, LEDState::LayerTypes frontlayer){
     for (int c=0; c<view->width; c++){
         for (int r=0; r<view->height; r++){
             

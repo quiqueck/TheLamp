@@ -3,7 +3,7 @@
 
 #include "Animation.h"
 
-typedef std::function<double (const double, const class Action*)> ActionRetimeFunction;
+typedef std::function<TimeFormat (const TimeFormat, const class Action*)> ActionRetimeFunction;
 
 class Action {
     public:
@@ -13,7 +13,7 @@ class Action {
         virtual void reset(bool soft=false)  { 
             activated = false;
         }
-        inline void execute(double time, uint8_t layerMask, LEDState::LayerTypes layer = LEDState::LayerTypes::FinalComposit) {
+        inline void execute(TimeFormat time, uint8_t layerMask, LEDState::LayerTypes layer = LEDState::LayerTypes::FinalComposit) {
             if (!activated) {
                 activated = true;
                 executeIntern(timeFunction(time, this), layerMask, layer);
@@ -22,7 +22,7 @@ class Action {
 
         const ActionRetimeFunction timeFunction;
     protected:
-        virtual void executeIntern(double time, uint8_t layerMask, LEDState::LayerTypes layer) = 0;
+        virtual void executeIntern(TimeFormat time, uint8_t layerMask, LEDState::LayerTypes layer) = 0;
 
     private:
         bool activated;
@@ -31,12 +31,12 @@ class Action {
 
 class DefaultAction : public Action {
     protected:
-        typedef std::function<void (const double, const class Action*)> Executable;
+        typedef std::function<void (const TimeFormat, const class Action*)> Executable;
     public:
 
         DefaultAction(Executable act, ActionRetimeFunction tmFkt=timeIdentity<Action>) : Action(tmFkt), exec(act) {}
     protected:
-        virtual void executeIntern(double time, uint8_t layerMask, LEDState::LayerTypes layer){
+        virtual void executeIntern(TimeFormat time, uint8_t layerMask, LEDState::LayerTypes layer){
             exec(time, this);
         }
 
@@ -55,7 +55,7 @@ class RepeatableAction : public DefaultAction {
 
         RepeatableAction(DefaultAction::Executable act, int repeat, ActionRetimeFunction tmFkt=timeIdentity<Action>) : DefaultAction(act, tmFkt),  repeat(repeat) {}
     protected:
-        virtual void executeIntern(double time, uint8_t layerMask, LEDState::LayerTypes layer){
+        virtual void executeIntern(TimeFormat time, uint8_t layerMask, LEDState::LayerTypes layer){
             if ((rCount--)>0){
                 DefaultAction::executeIntern(time, layerMask, layer);
             } 
@@ -71,7 +71,7 @@ class TestAction : public Action {
         TestAction(std::string n,  ActionRetimeFunction tmFkt=timeIdentity<Action>) : Action(tmFkt), name(n){}
 
     protected:
-        virtual void executeIntern(double time, uint8_t layerMask, LEDState::LayerTypes layer){
+        virtual void executeIntern(TimeFormat time, uint8_t layerMask, LEDState::LayerTypes layer){
             Serial.printf("    - Action %s: %d,%d @ %f\n", name.c_str(), layer, layerMask, time);
         }
 
