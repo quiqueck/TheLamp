@@ -12,7 +12,7 @@ class Animation;
 
 class LEDState {
     public: 
-        enum LayerTypes { FinalComposit=0x00, TopOverlay=0x01, MiddleOverlay=0x02, BottomOverlay=0x03, SolidBackground=0x04, LayerTypeCount=0x05 };
+        enum LayerTypes { FinalComposit=0x00, TopOverlay=0x01, MiddleOverlay=0x02, BottomOverlay=0x03, SolidBackground=0x04, TransitionBackBuffer=0x05, LayerTypeCount=0x06 };
         
         inline void setLastAnimation(Animation* anim, int frame) {
             lastAnimation = anim;

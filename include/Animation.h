@@ -26,27 +26,33 @@
 
  */
 
-typedef std::function<double (const double, const Animation&)> RetimeFunction;
-inline double timeIdentity(const double inTime, const Animation& a){
+typedef std::function<double (const double, const Animation*)> RetimeFunction;
+inline double timeIdentity(const double inTime, const Animation* a){
     return inTime;
-}
-
-inline double timeRepeat(const double inTime, const Animation& a){
-    double t = inTime;
-    while (t>a.duration) t -= a.duration;
-    return t;
 }
 
 class Animation {
     public:        
         Animation(double duration=0, RetimeFunction tmFkt=timeIdentity);
 
+        inline void render(double time, LEDState::LayerTypes layer = LEDState::LayerTypes::FinalComposit) {
+            renderIntern(timeFunction(time, this), layer);
+        }
+
         const double duration;
         const RetimeFunction timeFunction;
     protected:
-        
+        virtual void renderIntern(double time, LEDState::LayerTypes layer) = 0;
     private:
         
 };
+
+
+
+inline double timeRepeat(const double inTime, const Animation* a){
+    double t = inTime;
+    while (t>a->duration) t -= a->duration;
+    return t;
+}
 
 #endif

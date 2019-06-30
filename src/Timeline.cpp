@@ -1,5 +1,9 @@
 #include "Timeline.h"
+#include "Animation.h"
+
 #include <Arduino.h>
+
+
 
 Timeline::Timeline(){
     time = -1;
@@ -14,6 +18,8 @@ void Timeline::reset(){
 }
 
 void Timeline::tick(){
+    if (!active) return;
+    
     const unsigned long now = millis();
     const unsigned long delta = (now - lastTick);
     time += delta / 1000.0f;
