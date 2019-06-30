@@ -14,6 +14,8 @@ class Tickable {
     public:
         Tickable();
                 
+        inline double localTime() const { return time; }
+        inline double paused() const { return active==false; }
         bool tick(bool earlyOut=true, bool callRun=true);
         virtual void runAt(TimeFormat time) = 0;
 
