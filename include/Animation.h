@@ -100,6 +100,16 @@ class HorizontalWipeAnimation : public Animation2D {
         const float spread;        
 };
 
+class VerticalWipeAnimation : public Animation2D {
+    public:        
+        VerticalWipeAnimation(class LEDView2* view, CRGB cl, float spread=1.5f, TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl), spread(spread) {}
+    protected:
+        virtual void renderIntern(TimeFormat time, LEDState::LayerTypes layer);
+    private:
+        const CRGB cl;
+        const float spread;        
+};
+
 template <class T>
 inline TimeFormat timeRepeat(const TimeFormat inTime, const T* a){
     TimeFormat t = inTime;
