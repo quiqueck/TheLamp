@@ -17,6 +17,7 @@ void DefaultCompositor::compositIntern(double time, uint8_t layerMask, LEDState:
                     cl = blendFunction(cl, c, a);
                 }
             }
+            view->alphaFromLayer(c, r, frontlayer) = 1.0f;
             view->pixelFromLayer(c, r, frontlayer) = cl;
         }
     }

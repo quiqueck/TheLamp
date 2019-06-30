@@ -9,7 +9,36 @@
 
 class Animation;
 
-class Timeline{
+class Tickable {
+    friend class Transition;
+    public:
+        Tickable();
+                
+        void tick(bool earlyOut=true, bool callRun=true);
+        virtual void runAt(double time) = 0;
+
+        inline void begin() {
+            reset();
+            resume();            
+        }
+
+        inline void pause() { active = false; }
+
+        inline void resume() { 
+            lastTick = millis();
+            active = true; 
+        }
+    protected:
+        virtual void reset() = 0;
+        void resetTime();
+
+        unsigned long lastTick;
+        unsigned long accDelta;
+        double time; 
+        bool active;       
+};
+
+class Timeline : public Tickable{    
     public:
         Timeline();
 
@@ -28,30 +57,17 @@ class Timeline{
         void addCompositor(CompositList::PItemType track, double startTime, double playbackDuration, LEDState::LayerTypes layer);
 
         void addAction(ActionList::PItemType track, double timeStamp, LEDState::LayerTypes layer=LEDState::LayerTypes::FinalComposit);
-
-        void tick();
-        void runAt(double time);
+        
+        void runAt(double time);        
         void goToTime(double time);
         
-        inline void begin() {
-            reset();
-            resume();            
-        }
-
-        inline void pause() { active = false; }
-
-        inline void resume() { 
-            lastTick = millis();
-            active = true; 
-        }
+        uint8_t runWithTransition();
+        void compositWithTransition(uint8_t layerMask, LEDState::LayerTypes Background, LEDState::LayerTypes Final);
     protected:
-        void reset();
+        
+        virtual void reset();
 
     private:
-        unsigned long lastTick;
-        unsigned long accDelta;
-        double time;
-        bool active;
 
         AnimationList tracks;
         CompositList compositors;
