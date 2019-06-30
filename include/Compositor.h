@@ -17,6 +17,16 @@ inline CRGB alphaBlend(const CRGB& c0, const CRGB& c1, float a){
     return CRGB(c1.r * a + c0.r * aa, c1.g * a + c0.g * aa, c1.b * a + c0.b * aa);
 }
 
+inline CRGB alphaBlendWithGamma(const CRGB& c0, const CRGB& c1, float a){
+    const float GAMMA = 2.0f;
+    const float INV_GAMMA = 1.0f/GAMMA;
+    const float aa = 1.0f-a;
+    return CRGB(
+        pow(pow(c1.r, INV_GAMMA) * a + pow(c0.r, INV_GAMMA) * aa, GAMMA), 
+        pow(pow(c1.g, INV_GAMMA) * a + pow(c0.g, INV_GAMMA) * aa, GAMMA), 
+        pow(pow(c1.b, INV_GAMMA) * a + pow(c0.b, INV_GAMMA) * aa, GAMMA));
+}
+
 typedef std::function<TimeFormat (const TimeFormat, const class Compositor*)> CompositRetimeFunction;
 
 class Compositor{
