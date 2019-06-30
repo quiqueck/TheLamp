@@ -12,10 +12,11 @@ LEDArray::LEDArray(CRGB* store, uint16_t pixelCount) :
 
 LEDArray::LEDArray(CRGB** stores, float** alphaIns, uint16_t pixelCount) : 
     LEDView1(pixelCount), 
-    leds{stores[0], stores[1], stores[2], stores[3], stores[4]},
-    alphas{alphaIns[0], alphaIns[1], alphaIns[2], alphaIns[3], alphaIns[4]}
+    leds{stores[0], stores[1], stores[2], stores[3], stores[4], stores[5]},
+    alphas{alphaIns[0], alphaIns[1], alphaIns[2], alphaIns[3], alphaIns[4], alphaIns[5]}
 { 
     Serial.printf("INIT2 %x, %x, %x\n",  (void*)(&stores[0][0]), stores, stores[0]);
+
     //nothing to do here, init is done in begin()
 }
 CRGB dummy = CRGB::Red;
