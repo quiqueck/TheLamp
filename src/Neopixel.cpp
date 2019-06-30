@@ -3,6 +3,7 @@
 #include "LEDHardware.h"
 #include "LEDGrid.h"
 #include "VirtualGrid.h"
+#include "Timeline.h"
 uint8_t RANDOM = 0;
 #define  TOUCH_PIN 4 
 
@@ -68,10 +69,11 @@ void setup(){
     delay(500);
     leds.show();
 }
-
+Timeline t;
 void loop(){
-  delay(200);
-  leds.show();
+  t.tick();
+  //leds.show();
+  
 }
 
 void loop3(){
