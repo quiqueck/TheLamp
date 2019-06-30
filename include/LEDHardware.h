@@ -14,7 +14,7 @@ class LEDHardware : public LEDArray {
             CRGB** s = new CRGB*[LayerTypeCount];
             float** a = new float*[LayerTypeCount];
 
-            for (uint8_t i=0; i<5; i++){
+            for (uint8_t i=0; i<LayerTypeCount; i++){
                 s[i] = &pixelFromLayer(idx, (LayerTypes)i);
                 a[i] = &alphaFromLayer(idx, (LayerTypes)i);
             }
