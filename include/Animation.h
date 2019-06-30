@@ -31,6 +31,7 @@
 
  */
 
+typedef double TimeFormat;
 typedef std::function<double (const double, const class Animation*)> AnimationRetimeFunction;
 
 template <class T>
@@ -71,6 +72,31 @@ class TestAnimation : public Animation {
 
     private:
         std::string name;
+};
+
+class Animation2D : public Animation {
+    public:        
+        Animation2D(class LEDView2* view, double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation(duration, tmFkt), view(view){}
+    protected:
+        class LEDView2 * const view;
+};
+
+class SolidColorAnimation : public Animation2D {
+    public:        
+        SolidColorAnimation(class LEDView2* view, CRGB cl, double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl) {}
+    protected:
+        virtual void renderIntern(double time, LEDState::LayerTypes layer);
+    private:
+        const CRGB cl;
+};
+
+class HorizontalFillAnimation : public Animation2D {
+    public:        
+        HorizontalFillAnimation(class LEDView2* view, CRGB cl, double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl) {}
+    protected:
+        virtual void renderIntern(double time, LEDState::LayerTypes layer);
+    private:
+        const CRGB cl;
 };
 
 template <class T>
