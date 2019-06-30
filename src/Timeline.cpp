@@ -18,8 +18,8 @@ void Tickable::resetTime(){
 
 
 
-void Tickable::tick(bool earlyOut, bool callRun){
-    if (earlyOut && !active) return;
+bool Tickable::tick(bool earlyOut, bool callRun){
+    if (earlyOut && !active) return false;
     
     const unsigned long now = millis();
     const unsigned long delta = (now - lastTick);
@@ -29,8 +29,12 @@ void Tickable::tick(bool earlyOut, bool callRun){
 
     if (accDelta >= 1000/FPS) {
         accDelta -= 1000/FPS;
-        if (callRun) runAt(time);
+        if (callRun) { 
+            runAt(time);
+            return true;
+        }
     }
+    return false;
 }
 
 

@@ -92,11 +92,12 @@ class SolidColorAnimation : public Animation2D {
 
 class HorizontalWipeAnimation : public Animation2D {
     public:        
-        HorizontalWipeAnimation(class LEDView2* view, CRGB cl, TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl) {}
+        HorizontalWipeAnimation(class LEDView2* view, CRGB cl, float spread=1.5f, TimeFormat duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>) : Animation2D(view, duration, tmFkt), cl(cl), spread(spread) {}
     protected:
         virtual void renderIntern(TimeFormat time, LEDState::LayerTypes layer);
     private:
         const CRGB cl;
+        const float spread;        
 };
 
 template <class T>
@@ -111,7 +112,7 @@ inline TimeFormat timeBounce(const TimeFormat inTime, const T* a){
     TimeFormat t = inTime;
     while (t>=2*a->duration) t -= 2*a->duration;
     if (t>=a->duration) {
-        t = (2*a->duration-1) - t;
+        t = (2*a->duration) - t;
     }
     return t;
 }

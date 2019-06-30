@@ -18,7 +18,7 @@ void DefaultCompositor::compositIntern(TimeFormat time, uint8_t layerMask, LEDSt
                 }
             }
             view->alphaFromLayer(c, r, frontlayer) = 1.0f;
-            view->pixelFromLayer(c, r, frontlayer) = cl;
+            view->pixelFromLayer(c, r, LEDState::LayerTypes::FinalComposit) = cl;
         }
     }
 }

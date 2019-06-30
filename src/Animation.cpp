@@ -15,20 +15,22 @@ void SolidColorAnimation::renderIntern(TimeFormat time, LEDState::LayerTypes lay
 
 void HorizontalWipeAnimation::renderIntern(TimeFormat time, LEDState::LayerTypes layer){
     const TimeFormat p = time/duration;
-    const float pos = (float)(view->width * p);
-    float posI = 0.0f;
-    const float posF = modff(pos, &posI);
+    const float pos = (float)((view->width + spread) * p);
+    
+
+    //Serial.printf("%f %f %f: %.0f, %f\n", time, duration, pos, posI, posF);
     
     for (int c=0; c<view->width; c++){
+        const float dist = (c + spread) - pos;
         for (int r=0; r<view->height; r++){
-            if (c < posI) {
+            if (dist < 0) {
                 view->pixelFromLayer(c, r, layer) = cl;
                 view->alphaFromLayer(c, r, layer) = 1.0f;
-            } else if ( c == posI ) {
-                view->pixelFromLayer(c, r, layer) = cl;
-                view->alphaFromLayer(c, r, layer) = posF;
+            } else if ( dist > spread ) {
+                view->alphaFromLayer(c, r, layer) = 0.0f;                
             } else {
-                view->alphaFromLayer(c, r, layer) = 0.0f;
+                view->pixelFromLayer(c, r, layer) = cl;
+                view->alphaFromLayer(c, r, layer) = 1.0f - (dist / spread);
             }            
         }
     }

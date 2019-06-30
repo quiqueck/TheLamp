@@ -5,7 +5,7 @@
 #include "TimedList.h"
 #include "Animation.h"
 
-#define FPS 2
+#define FPS 60
 
 class Animation;
 
@@ -14,7 +14,7 @@ class Tickable {
     public:
         Tickable();
                 
-        void tick(bool earlyOut=true, bool callRun=true);
+        bool tick(bool earlyOut=true, bool callRun=true);
         virtual void runAt(TimeFormat time) = 0;
 
         inline void begin() {
@@ -46,7 +46,7 @@ class Timeline : public Tickable{
             addTrack(track, startTime, track->duration, layer);
         }
 
-        inline void addCompositor(CompositList::PItemType track, TimeFormat startTime, LEDState::LayerTypes layer){
+        inline void addCompositor(CompositList::PItemType track, TimeFormat startTime, LEDState::LayerTypes layer=LEDState::LayerTypes::FinalComposit){
             addCompositor(track, startTime, track->duration, layer);
         }
         /**
@@ -54,7 +54,7 @@ class Timeline : public Tickable{
          */
         void addTrack(AnimationList::PItemType track, TimeFormat startTime, TimeFormat playbackDuration, LEDState::LayerTypes layer);
         
-        void addCompositor(CompositList::PItemType track, TimeFormat startTime, TimeFormat playbackDuration, LEDState::LayerTypes layer);
+        void addCompositor(CompositList::PItemType track, TimeFormat startTime, TimeFormat playbackDuration, LEDState::LayerTypes layer=LEDState::LayerTypes::FinalComposit);
 
         void addAction(ActionList::PItemType track, TimeFormat timeStamp, LEDState::LayerTypes layer=LEDState::LayerTypes::FinalComposit);
         

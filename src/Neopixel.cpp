@@ -27,52 +27,7 @@ Relay* rly = nullptr;
 
 std::shared_ptr<Timeline> t1;
 
-void setup(){
-    Serial.begin(115200);
-    delay(200);  
-    rly = new SmartHomeRelay(mainButtonPressed);
-    leds.begin();
-
-    int offset = 0;
-    panels[0] = new LEDGridRowMajor(    leds.storeAt(offset),   9,  6, LEDGrid::oTL);
-    offset += panels[0]->count;
-
-    panels[1] = new LEDGridColumnMajor( leds.storeAt(offset),   7, 10, LEDGrid::oTL);
-    offset += panels[1]->count;
-
-    panels[2] = new LEDGridRowMajor(    leds.storeAt(offset),   6,  6, LEDGrid::oBR);
-    offset += panels[2]->count;
-
-    panels[3] = new LEDGridColumnMajor( leds.storeAt(offset),  7,  10, LEDGrid::oBR);
-    offset += panels[3]->count;
-
-    panels[4] = new LEDGridColumnMajor( leds.storeAt(offset),   5,  7, LEDGrid::oTL);
-    offset += panels[4]->count;
-
-    panels[5] = new LEDGridRowMajor(  leds.storeAt(offset),     7,  5, LEDGrid::oBL);
-    offset += panels[5]->count;
-
-    panels[0]->fill(CRGB::Red);
-    panels[1]->fill(CRGB::Green);
-    panels[2]->fill(CRGB::Blue);
-    panels[3]->fill(CRGB::Magenta);
-    panels[4]->fill(CRGB::Cyan);
-    panels[5]->fill(CRGB::Yellow);
-    master = new VirtualGrid(27, 23);
-
-    master->addPanel(panels[0],  9,  9);
-    master->addPanel(panels[1], 20, 10);
-    master->addPanel(panels[2],  0, 17);
-    master->addPanel(panels[3],  0,  4);
-    master->addPanel(panels[4], 11,  0);
-    master->addPanel(panels[5], 20,  2);
-
-    //master->pixel(10, 11) = CRGB(0xff, 0xff, 0xff);
-    
-    rly->on();
-    delay(500);
-    leds.show();
-
+void setupTestTimeline() {
     t1 = std::make_shared<Timeline>();
 
     auto a1 = std::make_shared<TestAnimation>("A1", 1.00, timeRepeat<Animation>);
@@ -129,9 +84,83 @@ void setup(){
     // t1->runAt(5.51);
     // t1->runAt(10.00);
 }
+
+void setup(){
+    Serial.begin(115200);
+    delay(200);  
+    rly = new SmartHomeRelay(mainButtonPressed);
+    leds.begin();
+
+    int offset = 0;
+    panels[0] = new LEDGridRowMajor(    leds.storeAt(offset),   9,  6, LEDGrid::oTL);
+    offset += panels[0]->count;
+
+    panels[1] = new LEDGridColumnMajor( leds.storeAt(offset),   7, 10, LEDGrid::oTL);
+    offset += panels[1]->count;
+
+    panels[2] = new LEDGridRowMajor(    leds.storeAt(offset),   6,  6, LEDGrid::oBR);
+    offset += panels[2]->count;
+
+    panels[3] = new LEDGridColumnMajor( leds.storeAt(offset),  7,  10, LEDGrid::oBR);
+    offset += panels[3]->count;
+
+    panels[4] = new LEDGridColumnMajor( leds.storeAt(offset),   5,  7, LEDGrid::oTL);
+    offset += panels[4]->count;
+
+    panels[5] = new LEDGridRowMajor(  leds.storeAt(offset),     7,  5, LEDGrid::oBL);
+    offset += panels[5]->count;
+
+    panels[0]->fill(CRGB::Red);
+    panels[1]->fill(CRGB::Green);
+    panels[2]->fill(CRGB::Blue);
+    panels[3]->fill(CRGB::Magenta);
+    panels[4]->fill(CRGB::Cyan);
+    panels[5]->fill(CRGB::Yellow);
+    master = new VirtualGrid(27, 23);
+
+    master->addPanel(panels[0],  9,  9);
+    master->addPanel(panels[1], 20, 10);
+    master->addPanel(panels[2],  0, 17);
+    master->addPanel(panels[3],  0,  4);
+    master->addPanel(panels[4], 11,  0);
+    master->addPanel(panels[5], 20,  2);
+
+    //master->pixel(10, 11) = CRGB(0xff, 0xff, 0xff);
+    
+    rly->on();
+    delay(500);
+    leds.show();
+
+    delay(500);
+
+    t1 = std::make_shared<Timeline>();
+
+    auto aBG0 = std::make_shared<SolidColorAnimation>(panels[0], CRGB::Red);
+    auto aBG1 = std::make_shared<SolidColorAnimation>(panels[1], CRGB::Green);
+    auto aBG2 = std::make_shared<SolidColorAnimation>(panels[2], CRGB::Blue);
+    auto aBG3 = std::make_shared<SolidColorAnimation>(panels[3], CRGB::Magenta);
+    auto aBG4 = std::make_shared<SolidColorAnimation>(panels[4], CRGB::Cyan);
+    auto aBG5 = std::make_shared<SolidColorAnimation>(panels[5], CRGB::Yellow);
+    auto a1 = std::make_shared<HorizontalWipeAnimation>(master, CRGB::Orange, 2.0f, 5.0f, timeBounce<Animation>);
+
+    auto c1 = std::make_shared<DefaultCompositor>(master);
+
+    t1->addTrack(a1, 0.0f, 0, LEDState::LayerTypes::BottomOverlay);
+    t1->addTrack(aBG0, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(aBG1, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(aBG2, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(aBG3, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(aBG4, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(aBG5, 0.0f, 0, LEDState::LayerTypes::SolidBackground);
+
+    t1->addCompositor(c1, 0.0f);
+    t1->begin();
+}
 Timeline t;
 void loop(){
-  t1->tick();
+  if (t1->tick()) {
+    leds.show();
+  }
 }
 
 void loop3(){
