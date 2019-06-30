@@ -10,15 +10,15 @@ void DefaultCompositor::compositIntern(TimeFormat time, uint8_t layerMask, LEDSt
         for (int r=0; r<view->height; r++){
             
             CRGB cl = view->pixelFromLayer(c, r, backlayer);
-            for (uint8_t l=LEDState::LayerTypes::CompositBottomMostLayer; l>=LEDState::LayerTypes::CompositTopMostLayer; l--) {
+             for (uint8_t l=LEDState::LayerTypes::CompositBottomMostLayer; l>=LEDState::LayerTypes::CompositTopMostLayer; l--) {
                 if (hasBit(layerMask, l)){
-                    const float a = view->alphaFromLayer(c, r, (LEDState::LayerTypes)l);
-                    const CRGB c = view->pixelFromLayer(c, r, (LEDState::LayerTypes)l);
-                    cl = blendFunction(cl, c, a);
+                    const float aa = view->alphaFromLayer(c, r, (LEDState::LayerTypes)l);
+                    const CRGB cc = view->pixelFromLayer(c, r, (LEDState::LayerTypes)l);
+                    cl = blendFunction(cl, cc, aa);
                 }
             }
             view->alphaFromLayer(c, r, frontlayer) = 1.0f;
-            view->pixelFromLayer(c, r, LEDState::LayerTypes::FinalComposit) = cl;
+            view->pixelFromLayer(c, r, frontlayer) = cl;
         }
     }
 }
