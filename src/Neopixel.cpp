@@ -25,6 +25,8 @@ void mainButtonPressed(SmartHomeRelay* r){
 
 Relay* rly = nullptr;
 
+std::shared_ptr<Timeline> t1;
+
 void setup(){
     Serial.begin(115200);
     delay(200);  
@@ -71,49 +73,65 @@ void setup(){
     delay(500);
     leds.show();
 
-    auto t1 = std::make_shared<Timeline>();
-    auto a1 = std::make_shared<TestAnimation>("A1", 100, timeRepeat<Animation>);
+    t1 = std::make_shared<Timeline>();
+
+    auto a1 = std::make_shared<TestAnimation>("A1", 1.00, timeRepeat<Animation>);
     auto a2 = std::make_shared<TestAnimation>("A2");
-    auto a3 = std::make_shared<TestAnimation>("A3", 500);
-    auto a4 = std::make_shared<TestAnimation>("A4", 100, timeBounce<Animation>);
+    auto a3 = std::make_shared<TestAnimation>("A3", 5.00);
+    auto a4 = std::make_shared<TestAnimation>("A4", 1.00, timeBounce<Animation>);
 
     auto c1 = std::make_shared<TestCompositor>("C0");
 
+    //auto e1 = std::make_shared<TestAction>("PAUSE");
+    auto timeline = t1;
+    auto e1 = std::make_shared<DefaultAction>([timeline](const double time, const Action* a){
+      Serial.println("---- PAUSE ----");
+      timeline->pause();
+    });
+
+    //auto e2 = std::make_shared<TestAction>("GOTO");
+     auto e2 = std::make_shared<RepeatableAction>([timeline](const double time, const Action* a){
+      Serial.printf("---- GO BACK ----\n");      
+      timeline->goToTime(1.00);
+    }, 3);
+
     t1->addTrack(a1, 0, LEDState::LayerTypes::SolidBackground);
-    t1->addTrack(a2, 100, LEDState::LayerTypes::SolidBackground);
-    t1->addTrack(a1, 200, 200, LEDState::LayerTypes::BottomOverlay);
-    t1->addTrack(a4, 200, 200, LEDState::LayerTypes::TopOverlay);
-    t1->addTrack(a3, 50, LEDState::LayerTypes::MiddleOverlay);
+    t1->addTrack(a2, 1.00, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(a1, 2.00, 2.00, LEDState::LayerTypes::BottomOverlay);
+    t1->addTrack(a4, 2.00, 2.00, LEDState::LayerTypes::TopOverlay);
+    t1->addTrack(a3, 0.50, LEDState::LayerTypes::MiddleOverlay);
 
     t1->addCompositor(c1, 0, LEDState::LayerTypes::FinalComposit);
 
-    t1->runAt(0);
-    t1->runAt(25);
-    t1->runAt(50);
-    t1->runAt(75);
-    t1->runAt(99);
-    t1->runAt(100);
-    t1->runAt(101);
-    t1->runAt(199);
-    t1->runAt(200);
-    t1->runAt(201);
-    t1->runAt(250);
-    t1->runAt(299);
-    t1->runAt(300);
-    t1->runAt(301);
-    t1->runAt(399);
-    t1->runAt(400);
-    t1->runAt(401);
-    t1->runAt(549);
-    t1->runAt(550);
-    t1->runAt(551);
-    t1->runAt(1000);
+    t1->addAction(e2, 5.20);
+    t1->addAction(e1, 9.00);
+
+    t1->begin();
+    // t1->runAt(0);
+    // t1->runAt(.25);
+    // t1->runAt(.50);
+    // t1->runAt(.75);
+    // t1->runAt(.99);
+    // t1->runAt(1.00);
+    // t1->runAt(1.01);
+    // t1->runAt(1.99);
+    // t1->runAt(2.00);
+    // t1->runAt(2.01);
+    // t1->runAt(2.50);
+    // t1->runAt(2.99);
+    // t1->runAt(3.00);
+    // t1->runAt(3.01);
+    // t1->runAt(3.99);
+    // t1->runAt(4.00);
+    // t1->runAt(4.01);
+    // t1->runAt(5.49);
+    // t1->runAt(5.50);
+    // t1->runAt(5.51);
+    // t1->runAt(10.00);
 }
 Timeline t;
 void loop(){
-  t.tick();
-  //leds.show();
-  
+  t1->tick();
 }
 
 void loop3(){

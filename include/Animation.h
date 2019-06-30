@@ -42,6 +42,11 @@ class Animation {
     public:        
         Animation(double duration=0, AnimationRetimeFunction tmFkt=timeIdentity<Animation>);
 
+        /*
+        soft = false  => timeline needs to be restarted
+        soft = true   => timeline moved to a previous timestamp => do not reset state of the object but make sure it can be enabled again
+         */
+        inline void reset(bool soft=false) const {}
         inline void render(double time, LEDState::LayerTypes layer = LEDState::LayerTypes::FinalComposit) {
             renderIntern(timeFunction(time, this), layer);
         }

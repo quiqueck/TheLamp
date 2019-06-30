@@ -4,6 +4,7 @@
 #include "LEDViews.h"
 #include "Animation.h"
 #include "Compositor.h"
+#include "Action.h"
 #include <vector>
 #include <memory>
 
@@ -27,7 +28,11 @@ class TimedList {
 
     public:
         void addItem(PItemType item, double startTime, double duration, LEDState::LayerTypes layer);
+        void each(double time, RunFunction fkt);
         void runAt(double time, RunFunction fkt);
+        void runAfter(double time, RunFunction fkt);
+        void runBefore(double time, RunFunction fkt);
+        void reset();
     protected:
 
     private:
@@ -36,4 +41,5 @@ class TimedList {
 
 typedef TimedList<Animation> AnimationList;
 typedef TimedList<Compositor> CompositList;
+typedef TimedList<Action> ActionList;
 #endif

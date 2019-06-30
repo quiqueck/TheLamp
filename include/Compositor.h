@@ -23,6 +23,7 @@ class Compositor{
     public:        
         Compositor(double duration=0, CompositRetimeFunction tmFkt=timeIdentity<Compositor>);
 
+        inline void reset(bool soft=false) const {}
         inline void composit(double time, uint8_t layerMask, LEDState::LayerTypes backlayer = LEDState::LayerTypes::SolidBackground, LEDState::LayerTypes frontlayer = LEDState::LayerTypes::FinalComposit) {
             compositIntern(timeFunction(time, this), layerMask, backlayer, frontlayer);
         }
