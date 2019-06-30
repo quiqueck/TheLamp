@@ -12,7 +12,7 @@ class Animation;
 
 class LEDState {
     public: 
-        enum LayerTypes { FinalComposit=0x00, TopOverlay=0x01, MiddleOverlay=0x02, BottomOverlay=0x03, SolidBackground=0x04, TransitionBackBuffer=0x05, LayerTypeCount=0x06 };
+        enum LayerTypes { FinalComposit=0x00, TopOverlay=0x01, MiddleOverlay=0x02, BottomOverlay=0x03, SolidBackground=0x04, TransitionBackBuffer=0x05, LayerTypeCount=0x06, CompositBottomMostLayer=0x03, CompositTopMostLayer=0x01 };
         
         inline void setLastAnimation(Animation* anim, int frame) {
             lastAnimation = anim;
@@ -64,5 +64,22 @@ class LEDView2 : public LEDState{
     protected:
         LEDView2(uint16_t pixelWidth, uint16_t pixelHeight) : LEDState(), pixelCount(pixelWidth*pixelHeight), width(pixelWidth), height(pixelHeight) {}
 };
+
+inline uint8_t toBit(const LEDState::LayerTypes layer) {
+    return 1 << layer;
+}
+
+inline void addBit(uint8_t& mask, const LEDState::LayerTypes layer) {
+    mask = mask | toBit(layer);
+}
+
+inline bool hasBit(const uint8_t mask, const LEDState::LayerTypes layer) {
+    return (mask & toBit(layer)) != 0;
+}
+
+inline bool hasBit(const uint8_t mask, const uint8_t layer) {
+    return (mask & toBit((LEDState::LayerTypes)layer)) != 0;
+}
+
 
 #endif

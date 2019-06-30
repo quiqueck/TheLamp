@@ -1,5 +1,5 @@
 #include "Animation.h"
 
-Animation::Animation(double duration, RetimeFunction tmFkt) : duration(duration), timeFunction(tmFkt) {
+Animation::Animation(double duration, AnimationRetimeFunction tmFkt) : duration(duration), timeFunction(tmFkt) {
      
 }

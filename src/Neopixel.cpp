@@ -4,6 +4,8 @@
 #include "LEDGrid.h"
 #include "VirtualGrid.h"
 #include "Timeline.h"
+#include "Animation.h"
+
 uint8_t RANDOM = 0;
 #define  TOUCH_PIN 4 
 
@@ -68,6 +70,44 @@ void setup(){
     rly->on();
     delay(500);
     leds.show();
+
+    auto t1 = std::make_shared<Timeline>();
+    auto a1 = std::make_shared<TestAnimation>("A1", 100, timeRepeat<Animation>);
+    auto a2 = std::make_shared<TestAnimation>("A2");
+    auto a3 = std::make_shared<TestAnimation>("A3", 500);
+    auto a4 = std::make_shared<TestAnimation>("A4", 100, timeBounce<Animation>);
+
+    auto c1 = std::make_shared<TestCompositor>("C0");
+
+    t1->addTrack(a1, 0, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(a2, 100, LEDState::LayerTypes::SolidBackground);
+    t1->addTrack(a1, 200, 200, LEDState::LayerTypes::BottomOverlay);
+    t1->addTrack(a4, 200, 200, LEDState::LayerTypes::TopOverlay);
+    t1->addTrack(a3, 50, LEDState::LayerTypes::MiddleOverlay);
+
+    t1->addCompositor(c1, 0, LEDState::LayerTypes::FinalComposit);
+
+    t1->runAt(0);
+    t1->runAt(25);
+    t1->runAt(50);
+    t1->runAt(75);
+    t1->runAt(99);
+    t1->runAt(100);
+    t1->runAt(101);
+    t1->runAt(199);
+    t1->runAt(200);
+    t1->runAt(201);
+    t1->runAt(250);
+    t1->runAt(299);
+    t1->runAt(300);
+    t1->runAt(301);
+    t1->runAt(399);
+    t1->runAt(400);
+    t1->runAt(401);
+    t1->runAt(549);
+    t1->runAt(550);
+    t1->runAt(551);
+    t1->runAt(1000);
 }
 Timeline t;
 void loop(){
