@@ -51,7 +51,7 @@ void Timeline::reset(){
 }
 
 uint8_t Timeline::runWithTransition(){
-    Serial.printf("Composit Time %f\n", time);
+    //Serial.printf("Composit Time %f\n", time);
     uint8_t layerMask = 0;
     tracks.runAt(time, [&layerMask](const TimeFormat myTime, const AnimationList::TimeItem& item) { 
             addBit(layerMask, item.layer);
@@ -62,7 +62,7 @@ uint8_t Timeline::runWithTransition(){
 }
 
 void Timeline::compositWithTransition(uint8_t layerMask, LEDState::LayerTypes Background, LEDState::LayerTypes Final){
-    Serial.printf(" => mask=%d\n", layerMask);
+    //Serial.printf(" => mask=%d\n", layerMask);
     const LEDState::LayerTypes BG = Background;
     const LEDState::LayerTypes FG = Final;
     compositors.runAt(time, [layerMask, BG, FG](const TimeFormat myTime, const CompositList::TimeItem& item) { 
@@ -75,14 +75,14 @@ void Timeline::compositWithTransition(uint8_t layerMask, LEDState::LayerTypes Ba
 }
 
 void Timeline::runAt(TimeFormat time){
-    Serial.printf("Time %f\n", time);
+    //Serial.printf("Time %f\n", time);
     uint8_t layerMask = 0;
     tracks.runAt(time, [&layerMask](const TimeFormat myTime, const AnimationList::TimeItem& item) { 
             addBit(layerMask, item.layer);
             item.value->render(myTime, item.layer);
     });
 
-    Serial.printf(" => mask=%d\n", layerMask);
+    //Serial.printf(" => mask=%d\n", layerMask);
     compositors.runAt(time, [layerMask](const TimeFormat myTime, const CompositList::TimeItem& item) { 
             item.value->composit(myTime, layerMask, LEDState::LayerTypes::SolidBackground, item.layer);
     });
